@@ -1,24 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Notes from "./pages/Notes";
+import CreateNotes from "./pages/CreateNotes";
+import { createTheme, ThemeProvider } from "@material-ui/core";
+import { purple } from "@material-ui/core/colors";
+
+//create theme
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#fefefe",
+    },
+    secondary: purple,
+  },
+  typography: {
+    fontWeightLight: 400,
+    fontWeightRegular: 500,
+    fontWeightMedium: 600,
+    fontWeightBold: 700,
+  },
+});
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <Router>
+        <Switch>
+          <Route path="/" exact component={Notes} />
+          <Route path="/create-notes" component={CreateNotes} />
+        </Switch>
+      </Router>
+    </ThemeProvider>
   );
 }
 
