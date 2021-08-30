@@ -3,13 +3,14 @@ import Notes from "./pages/Notes";
 import CreateNotes from "./pages/CreateNotes";
 import { createTheme, ThemeProvider } from "@material-ui/core";
 import { purple } from "@material-ui/core/colors";
+import Layout from "./components/Layout";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import SalesList from "./pages/Sales/SalesList";
+import CreateSales from "./pages/Sales/CreateSales";
 
 //create theme
 const theme = createTheme({
   palette: {
-    primary: {
-      main: "#fefefe",
-    },
     secondary: purple,
   },
   typography: {
@@ -24,10 +25,15 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Router>
-        <Switch>
-          <Route path="/" exact component={Notes} />
-          <Route path="/create-notes" component={CreateNotes} />
-        </Switch>
+        <Layout>
+          <Switch>
+            <Route path="/" exact component={Dashboard} />
+            <Route path="/notes" component={Notes} />
+            <Route path="/create-notes" component={CreateNotes} />
+            <Route path="/sales" component={SalesList} />
+            <Route path="/create-sales" component={CreateSales} />
+          </Switch>
+        </Layout>
       </Router>
     </ThemeProvider>
   );

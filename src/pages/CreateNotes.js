@@ -2,12 +2,17 @@ import {
   Button,
   Container,
   makeStyles,
-  Radio,
   TextField,
   Typography,
+  RadioGroup,
+  Radio,
+  FormControlLabel,
+  FormLabel,
+  FormControl,
 } from "@material-ui/core";
 import React, { useState } from "react";
 import BackupOutlinedIcon from "@material-ui/icons/BackupOutlined";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles({
   field: {
@@ -23,6 +28,8 @@ export default function CreateNotes() {
   const [detail, setDetail] = useState("");
   const [titleError, setTitleError] = useState(false);
   const [detailError, setDetailError] = useState(false);
+  const [categories, setCategories] = useState("work");
+  const history = useHistory();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -37,7 +44,13 @@ export default function CreateNotes() {
     if (title && detail) {
       setTitleError(false);
       setDetailError(false);
-      console.log(title, detail);
+      fetch("http://localhost:8000/notes", {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify({ title, details: detail, category: categories }),
+      }).then(() => {
+        history.push("/");
+      });
     }
   };
   return (
@@ -78,8 +91,25 @@ export default function CreateNotes() {
           }}
           error={detailError}
         />
-        <Radio value="hello" />
-        <Radio value="bye" />
+
+        <FormControl className={classes.field}>
+          <FormLabel>Note Category</FormLabel>
+          <RadioGroup
+            value={categories}
+            onChange={(e) => {
+              setCategories(e.target.value);
+            }}
+          >
+            <FormControlLabel control={<Radio />} label="Money" value="money" />
+            <FormControlLabel control={<Radio />} label="Todos" value="todos" />
+            <FormControlLabel
+              control={<Radio />}
+              label="Reminders"
+              value="reminders"
+            />
+            <FormControlLabel control={<Radio />} label="Work" value="work" />
+          </RadioGroup>
+        </FormControl>
 
         <Button
           variant="contained"
