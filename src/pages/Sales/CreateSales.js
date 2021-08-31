@@ -1,5 +1,4 @@
 import {
-  Container,
   FormControl,
   makeStyles,
   TextField,
@@ -7,9 +6,18 @@ import {
   Typography,
   InputLabel,
   Button,
+  Grid,
+  TableContainer,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Paper,
 } from "@material-ui/core";
 import { AddCircleOutlined } from "@material-ui/icons";
 import React, { useState } from "react";
+import Swal from "sweetalert2";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -76,12 +84,17 @@ export default function CreateSales() {
 
   const [items, setItems] = useState(storeItems);
   const [itemPrices, setItemPrices] = useState([]);
+  const [selectedItemName, setselectedItemName] = useState("");
   const [price, setPrice] = useState("");
   const [selectedItem, setSelectedItem] = useState("");
   const [selectedUnit, setSelectedUnit] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [addedItems, setAddedItems] = useState([]);
 
   const itemSelectHandler = (e) => {
     const itemId = e.target.value;
+    const itemName = e.target.selectedOptions[0].text;
+    setselectedItemName(itemName);
     setSelectedItem(itemId);
     items.find((item) => {
       if (itemId == item.id) {
@@ -101,17 +114,40 @@ export default function CreateSales() {
   };
 
   const addItemHandler = () => {
-    console.log("dsdsd", selectedItem + selectedUnit);
+    const totalForItem = price * quantity;
+    let newSales = {};
+    if (selectedItem && selectedUnit && quantity && price) {
+      newSales = {
+        item: selectedItem,
+        item_name: selectedItemName,
+        unit: selectedUnit,
+        quantity: quantity,
+        unit_price: price,
+        total: totalForItem,
+      };
+      setAddedItems([...addedItems, newSales]);
+    } else {
+      Swal.fire({
+        title: "Error!",
+        text: "Enter all the fields!",
+        icon: "error",
+        confirmButtonText: "Okay",
+      });
+    }
+
+    setItemPrices([]);
+    setPrice("");
+    setQuantity("");
   };
 
   return (
     <>
-      <Container>
-        <Typography variant="h6" color="textSecondary" gutterBottom>
-          Create a new Sales
-        </Typography>
-        <form noValidate autoComplete="off">
-          <FormControl className={classes.formControl}>
+      <Typography variant="h6" gutterBottom>
+        Create Sales
+      </Typography>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6} sm={12}>
+          <FormControl fullWidth>
             <InputLabel id="demo-mutiple-name-label">Item</InputLabel>
             <Select native={true} onChange={itemSelectHandler}>
               {items.map((item) => (
@@ -121,7 +157,9 @@ export default function CreateSales() {
               ))}
             </Select>
           </FormControl>
-          <FormControl className={classes.formControl}>
+        </Grid>
+        <Grid item xs={12} md={6} sm={12}>
+          <FormControl fullWidth>
             <InputLabel id="demo-mutiple-name-label">Units</InputLabel>
             <Select native={true} onChange={unitSelectHandler}>
               {itemPrices.map((itemPrice) => (
@@ -131,12 +169,24 @@ export default function CreateSales() {
               ))}
             </Select>
           </FormControl>
-          <FormControl className={classes.formControl}>
+        </Grid>
+        <Grid item xs={12} md={6} sm={12}>
+          <FormControl fullWidth>
             <TextField label="Price" value={price} />
           </FormControl>
-          <FormControl className={classes.formControl}>
-            <TextField label="Quantity" />
+        </Grid>
+        <Grid item xs={12} md={6} sm={12}>
+          <FormControl fullWidth>
+            <TextField
+              label="Quantity"
+              value={quantity}
+              onChange={(e) => {
+                setQuantity(e.target.value);
+              }}
+            />
           </FormControl>
+        </Grid>
+        <Grid item xs={12} md={6} sm={12}>
           <FormControl>
             <Button
               variant="contained"
@@ -147,8 +197,32 @@ export default function CreateSales() {
               Add Item
             </Button>
           </FormControl>
-        </form>
-      </Container>
+        </Grid>
+        <Grid item xs={12} md={12} sm={12}>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Item</TableCell>
+                  <TableCell>Quantity</TableCell>
+                  <TableCell>Unit Price</TableCell>
+                  <TableCell>Total</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {addedItems.map((addedItem, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{addedItem.item_name}</TableCell>
+                    <TableCell>{addedItem.quantity}</TableCell>
+                    <TableCell>{addedItem.unit_price}</TableCell>
+                    <TableCell>{addedItem.total}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
+      </Grid>
     </>
   );
 }
